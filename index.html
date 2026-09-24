@@ -131,21 +131,16 @@
       box-shadow:var(--md-sys-shadow);
     }
     .stop.optional{background:var(--md-sys-color-surface-container-high);box-shadow:none}
-    .stop.transit{
-      background:var(--md-sys-color-tertiary-container);
-      color:var(--md-sys-color-on-tertiary-container);
-      box-shadow:none;
-    }
+    .stop.transit,
     .stop.outdoors{
-      background:var(--md-sys-color-secondary-container);
-      color:var(--md-sys-color-on-secondary-container);
-      box-shadow:none;
+      background:var(--md-sys-color-surface-container-lowest);
+      color:var(--md-sys-color-on-surface);
+      box-shadow:var(--md-sys-shadow);
     }
     .time{
       padding-top:2px;color:var(--md-sys-color-on-surface-variant);
       font-size:12px;line-height:16px;font-weight:600;letter-spacing:.01em;
     }
-    .stop.transit .time,.stop.outdoors .time{color:currentColor;opacity:.72}
     .content{min-width:0}
     .stop-title{
       margin:0;font-size:18px;line-height:24px;
@@ -155,12 +150,10 @@
       margin:2px 0 0;color:var(--md-sys-color-primary);
       font-size:12px;line-height:16px;font-weight:600;
     }
-    .stop.transit .area,.stop.outdoors .area{color:currentColor;opacity:.78}
     .notes{
       margin:10px 0 0;color:var(--md-sys-color-on-surface-variant);
       font-size:14px;line-height:20px;font-weight:400;
     }
-    .stop.transit .notes,.stop.outdoors .notes{color:currentColor;opacity:.84}
     .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
     .chip{
       display:inline-flex;align-items:center;justify-content:center;
@@ -182,9 +175,6 @@
       background:var(--md-sys-color-primary-container);
       color:var(--md-sys-color-on-primary-container);
     }
-    .stop.transit .chip,.stop.outdoors .chip{
-      border-color:currentColor;color:currentColor;opacity:.78;
-    }
     .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
     .action{
       display:inline-flex;align-items:center;justify-content:center;
@@ -201,7 +191,6 @@
       background:var(--md-sys-color-primary);
       color:var(--md-sys-color-on-primary);
     }
-    .stop.transit .action,.stop.outdoors .action{border-color:currentColor;color:currentColor}
     .foot{
       margin-top:44px;padding:24px 4px 0;
       border-top:1px solid var(--md-sys-color-outline-variant);
