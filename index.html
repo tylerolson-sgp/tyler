@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#16362c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Seattle">
+  <title>Seattle · Sep 24–27</title>
+  <style>
+    :root{
+      --bg:#f5f3ed;
+      --surface:#fffdfa;
+      --ink:#17211d;
+      --muted:#68736d;
+      --line:#d9ddd8;
+      --green:#16362c;
+      --green-2:#255846;
+      --chip:#e7ece8;
+      --warm:#efe6d7;
+      --blue:#e3ebef;
+      --shadow:0 10px 30px rgba(18,33,27,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+    a{color:inherit}
+    button{font:inherit}
+    .shell{max-width:760px;margin:0 auto;padding:0 18px 64px}
+    .hero{
+      padding:calc(env(safe-area-inset-top) + 30px) 2px 24px;
+    }
+    .eyebrow{
+      margin:0 0 9px;
+      color:var(--green-2);
+      font-size:12px;
+      line-height:1;
+      font-weight:800;
+      letter-spacing:.11em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(38px,10vw,64px);
+      line-height:.92;
+      letter-spacing:-.055em;
+      font-weight:760;
+    }
+    .subhead{
+      margin:13px 0 0;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.35;
+    }
+    .day-nav-wrap{
+      position:sticky;
+      top:0;
+      z-index:20;
+      margin:0 -18px;
+      padding:8px 18px 10px;
+      background:linear-gradient(to bottom,var(--bg) 72%,rgba(245,243,237,0));
+    }
+    .day-nav{
+      display:flex;
+      gap:7px;
+      overflow:auto;
+      scrollbar-width:none;
+      padding:4px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      background:rgba(255,253,250,.94);
+      box-shadow:0 6px 18px rgba(18,33,27,.06);
+      backdrop-filter:blur(14px);
+    }
+    .day-nav::-webkit-scrollbar{display:none}
+    .day-nav a{
+      flex:1 0 auto;
+      min-width:72px;
+      text-decoration:none;
+      text-align:center;
+      padding:10px 12px;
+      border-radius:11px;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:720;
+      transition:.16s ease;
+    }
+    .day-nav a.active{
+      background:var(--green);
+      color:#fff;
+    }
+    .day{
+      scroll-margin-top:82px;
+      padding-top:27px;
+    }
+    .day-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:14px;
+      padding:0 2px;
+    }
+    .day-kicker{
+      margin:0 0 4px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:760;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .day-title{
+      margin:0;
+      font-size:27px;
+      line-height:1.05;
+      letter-spacing:-.035em;
+      font-weight:760;
+    }
+    .today-pill{
+      display:none;
+      align-items:center;
+      gap:6px;
+      padding:7px 10px;
+      border-radius:999px;
+      background:var(--green);
+      color:white;
+      font-size:11px;
+      font-weight:780;
+      text-transform:uppercase;
+      letter-spacing:.07em;
+      white-space:nowrap;
+    }
+    .day.is-today .today-pill{display:inline-flex}
+    .timeline{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .stop{
+      position:relative;
+      display:grid;
+      grid-template-columns:74px minmax(0,1fr);
+      gap:12px;
+      padding:16px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:var(--surface);
+      box-shadow:0 2px 8px rgba(18,33,27,.025);
+    }
+    .stop.optional{background:#fbfaf6}
+    .stop.transit{
+      background:var(--blue);
+      border-color:#d3dde2;
+    }
+    .stop.outdoors{
+      background:#edf1e8;
+      border-color:#d8dfd2;
+    }
+    .time{
+      padding-top:2px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:760;
+      line-height:1.25;
+      letter-spacing:-.01em;
+    }
+    .content{min-width:0}
+    .stop-title{
+      margin:0;
+      font-size:17px;
+      line-height:1.18;
+      letter-spacing:-.02em;
+      font-weight:760;
+    }
+    .area{
+      margin:4px 0 0;
+      color:var(--green-2);
+      font-size:12px;
+      line-height:1.35;
+      font-weight:700;
+    }
+    .notes{
+      margin:9px 0 0;
+      color:#46514c;
+      font-size:14px;
+      line-height:1.42;
+    }
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:11px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      min-height:24px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:var(--chip);
+      color:#425048;
+      font-size:10px;
+      line-height:1;
+      font-weight:780;
+      letter-spacing:.045em;
+      text-transform:uppercase;
+    }
+    .chip.book{background:var(--warm);color:#685332}
+    .chip.optional{background:#ece8df;color:#625b50}
+    .chip.veg{background:#e4efe6;color:#28553a}
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      margin-top:12px;
+    }
+    .action{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:36px;
+      padding:8px 11px;
+      border:1px solid #cdd3cf;
+      border-radius:10px;
+      background:rgba(255,255,255,.7);
+      color:var(--ink);
+      text-decoration:none;
+      font-size:12px;
+      font-weight:720;
+    }
+    .action.primary{
+      border-color:var(--green);
+      background:var(--green);
+      color:#fff;
+    }
+    .foot{
+      margin-top:38px;
+      padding:19px 4px 0;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+    }
+    .jump{
+      display:none;
+      position:fixed;
+      right:16px;
+      bottom:calc(16px + env(safe-area-inset-bottom));
+      z-index:30;
+      width:46px;
+      height:46px;
+      border:0;
+      border-radius:50%;
+      background:var(--green);
+      color:#fff;
+      box-shadow:var(--shadow);
+      font-size:20px;
+      cursor:pointer;
+    }
+    @media (max-width:520px){
+      .shell{padding-left:14px;padding-right:14px}
+      .day-nav-wrap{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}
+      .hero{padding-top:calc(env(safe-area-inset-top) + 26px)}
+      .stop{grid-template-columns:64px minmax(0,1fr);padding:14px;gap:10px}
+      .day-title{font-size:25px}
+      .jump{display:block}
+    }
+    @media (prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *{transition:none!important}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">Trip itinerary</p>
+      <h1>Seattle</h1>
+      <p class="subhead">September 24–27, 2026 · Redmond + Seattle</p>
+    </header>
+
+    <div class="day-nav-wrap" aria-label="Trip days">
+      <nav class="day-nav">
+        <a href="#thu" data-day="thu">Thu 24</a>
+        <a href="#fri" data-day="fri">Fri 25</a>
+        <a href="#sat" data-day="sat">Sat 26</a>
+        <a href="#sun" data-day="sun">Sun 27</a>
+      </nav>
+    </div>
+
+    <section class="day" id="thu" data-date="2026-09-24">
+      <div class="day-head">
+        <div>
+          <p class="day-kicker">Thursday · September 24</p>
+          <h2 class="day-title">Arrival + Eastside</h2>
+        </div>
+        <span class="today-pill">Today</span>
+      </div>
+      <div class="timeline">
+        <article class="stop transit">
+          <div class="time">Afternoon</div>
+          <div class="content">
+            <h3 class="stop-title">SeaTac → Redmond</h3>
+            <p class="area">Airport → Eastside</p>
+            <p class="notes">Take the 1 Line to International District/Chinatown, then transfer to the 2 Line to Downtown Redmond. Driving is also an option.</p>
+            <div class="meta"><span class="chip">$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Downtown%20Redmond%20Station" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Dinner</div>
+          <div class="content">
+            <h3 class="stop-title">Toshi's Teriyaki</h3>
+            <p class="area">Mill Creek</p>
+            <p class="notes">Original Seattle-style teriyaki. About 25 min from Redmond via I-405. Chicken and beef only.</p>
+            <div class="meta"><span class="chip">$</span><span class="chip">Limited veg</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Toshi%27s%20Teriyaki%20Mill%20Creek%20WA" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop optional">
+          <div class="time">Evening</div>
+          <div class="content">
+            <h3 class="stop-title">Marymoor Park or Woodinville breweries</h3>
+            <p class="area">Redmond / Woodinville</p>
+            <p class="notes">Optional depending on timing and energy. Woodinville is about 15 min north of Redmond.</p>
+            <div class="meta"><span class="chip optional">Optional</span><span class="chip veg">Veg-friendly</span><span class="chip">$–$$</span></div>
+            <div class="actions">
+              <a class="action" href="https://www.google.com/maps/search/?api=1&query=Marymoor%20Park%20Redmond%20WA" target="_blank" rel="noopener">Marymoor</a>
+              <a class="action" href="https://www.google.com/maps/search/?api=1&query=breweries%20Woodinville%20WA" target="_blank" rel="noopener">Woodinville</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="day" id="fri" data-date="2026-09-25">
+      <div class="day-head">
+        <div>
+          <p class="day-kicker">Friday · September 25</p>
+          <h2 class="day-title">Downtown + Capitol Hill</h2>
+        </div>
+        <span class="today-pill">Today</span>
+      </div>
+      <div class="timeline">
+        <article class="stop transit">
+          <div class="time">9:00 AM</div>
+          <div class="content">
+            <h3 class="stop-title">Light rail into Seattle</h3>
+            <p class="area">Downtown Redmond Station</p>
+            <p class="notes">Take the 2 Line into the city. About 40 min to International District/Chinatown.</p>
+            <div class="meta"><span class="chip">$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Downtown%20Redmond%20Station" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">10:30 AM</div>
+          <div class="content">
+            <h3 class="stop-title">Pioneer Square Underground Tour</h3>
+            <p class="area">Pioneer Square</p>
+            <p class="notes">Short walk from International District/Chinatown Station.</p>
+            <div class="meta"><span class="chip">$$</span><span class="chip book">Book ahead</span></div>
+            <div class="actions">
+              <a class="action" href="https://www.google.com/maps/search/?api=1&query=Bill%20Speidel%27s%20Underground%20Tour%20Seattle" target="_blank" rel="noopener">Maps</a>
+              <a class="action primary" href="https://www.undergroundtour.com/" target="_blank" rel="noopener">Tickets</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="stop transit">
+          <div class="time">Lunch</div>
+          <div class="content">
+            <h3 class="stop-title">Chinatown-ID → Pike Place Market</h3>
+            <p class="area">International District / Downtown</p>
+            <p class="notes">Spend some time in the International District, then walk or take transit toward Pike Place.</p>
+            <div class="meta"><span class="chip veg">Veg-friendly</span><span class="chip">$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Pike%20Place%20Market%20Seattle" target="_blank" rel="noopener">Pike Place</a></div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">1:00 PM</div>
+          <div class="content">
+            <h3 class="stop-title">Pike Place lunch</h3>
+            <p class="area">Pike Place Market</p>
+            <p class="notes">Piroshky Piroshky has vegetarian fillings. Beecher's mac and cheese is another option. Explore the lower levels of the market.</p>
+            <div class="meta"><span class="chip veg">Veg-friendly</span><span class="chip">$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Pike%20Place%20Market%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Late afternoon</div>
+          <div class="content">
+            <h3 class="stop-title">Seattle Center → Chihuly Garden and Glass</h3>
+            <p class="area">Seattle Center</p>
+            <p class="notes">Chihuly Garden and Glass. Space Needle optional depending on weather and visibility.</p>
+            <div class="meta"><span class="chip">$$</span><span class="chip book">Book ahead</span></div>
+            <div class="actions">
+              <a class="action" href="https://www.google.com/maps/search/?api=1&query=Chihuly%20Garden%20and%20Glass%20Seattle" target="_blank" rel="noopener">Maps</a>
+              <a class="action primary" href="https://www.chihulygardenandglass.com/buy-tickets" target="_blank" rel="noopener">Tickets</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Evening</div>
+          <div class="content">
+            <h3 class="stop-title">Kedai Makan → Pike/Pine bars</h3>
+            <p class="area">Capitol Hill</p>
+            <p class="notes">Malaysian food with several vegetarian options. Return from Capitol Hill Station.</p>
+            <div class="meta"><span class="chip veg">Veg-friendly</span><span class="chip">$$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Kedai%20Makan%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="day" id="sat" data-date="2026-09-26">
+      <div class="day-head">
+        <div>
+          <p class="day-kicker">Saturday · September 26</p>
+          <h2 class="day-title">Hike + Seattle</h2>
+        </div>
+        <span class="today-pill">Today</span>
+      </div>
+      <div class="timeline">
+        <article class="stop outdoors">
+          <div class="time">Leave 7:30</div>
+          <div class="content">
+            <h3 class="stop-title">Hike → I-90 east</h3>
+            <p class="area">North Bend / Snoqualmie Pass</p>
+            <p class="notes">Rattlesnake Ledge or Twin Falls are about 30 min from Redmond. Snow Lake is about 50 min and is the longer alpine option.</p>
+            <div class="meta"><span class="chip">Free</span><span class="chip">Discover Pass may apply</span></div>
+            <div class="actions">
+              <a class="action" href="https://www.google.com/maps/search/?api=1&query=Rattlesnake%20Ledge%20Trailhead%20WA" target="_blank" rel="noopener">Rattlesnake</a>
+              <a class="action" href="https://www.google.com/maps/search/?api=1&query=Twin%20Falls%20Trailhead%20WA" target="_blank" rel="noopener">Twin Falls</a>
+              <a class="action" href="https://www.google.com/maps/search/?api=1&query=Snow%20Lake%20Trailhead%20Snoqualmie%20Pass%20WA" target="_blank" rel="noopener">Snow Lake</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Late lunch</div>
+          <div class="content">
+            <h3 class="stop-title">Ba Bar Green</h3>
+            <p class="area">Seattle</p>
+            <p class="notes">Plant-based Vietnamese.</p>
+            <div class="meta"><span class="chip veg">Fully plant-based</span><span class="chip">$$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Ba%20Bar%20Green%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Afternoon</div>
+          <div class="content">
+            <h3 class="stop-title">Olympic Sculpture Park</h3>
+            <p class="area">Belltown waterfront</p>
+            <p class="notes">Walk through the sculpture park and continue into Myrtle Edwards Park.</p>
+            <div class="meta"><span class="chip">Free</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Olympic%20Sculpture%20Park%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Dusk</div>
+          <div class="content">
+            <h3 class="stop-title">Kerry Park</h3>
+            <p class="area">Queen Anne</p>
+            <p class="notes">Skyline viewpoint. Best with clear weather.</p>
+            <div class="meta"><span class="chip">Free</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Kerry%20Park%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Dinner</div>
+          <div class="content">
+            <h3 class="stop-title">Sushi Samurai</h3>
+            <p class="area">Queen Anne</p>
+            <p class="notes">Fully vegan sushi. A few blocks from Kerry Park. Return to Redmond via SR 520.</p>
+            <div class="meta"><span class="chip veg">Fully vegan</span><span class="chip">$$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Sushi%20Samurai%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="day" id="sun" data-date="2026-09-27">
+      <div class="day-head">
+        <div>
+          <p class="day-kicker">Sunday · September 27</p>
+          <h2 class="day-title">Ballard + North Seattle</h2>
+        </div>
+        <span class="today-pill">Today</span>
+      </div>
+      <div class="timeline">
+        <article class="stop">
+          <div class="time">9:00 AM</div>
+          <div class="content">
+            <h3 class="stop-title">Ballard Farmers Market</h3>
+            <p class="area">Ballard Ave</p>
+            <p class="notes">Sunday farmers market. Plan to get breakfast here.</p>
+            <div class="meta"><span class="chip veg">Veg-friendly</span><span class="chip">$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Ballard%20Farmers%20Market%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Late morning</div>
+          <div class="content">
+            <h3 class="stop-title">Ballard Locks</h3>
+            <p class="area">Ballard</p>
+            <p class="notes">Locks, fish ladder and botanical garden.</p>
+            <div class="meta"><span class="chip">Free</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Ballard%20Locks%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop outdoors">
+          <div class="time">Midday</div>
+          <div class="content">
+            <h3 class="stop-title">Discovery Park</h3>
+            <p class="area">Magnolia</p>
+            <p class="notes">Loop trail toward West Point Lighthouse with bluff, beach and Olympic Mountain views.</p>
+            <div class="meta"><span class="chip">Free</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Discovery%20Park%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Afternoon</div>
+          <div class="content">
+            <h3 class="stop-title">Fremont Troll → Gas Works Park</h3>
+            <p class="area">Fremont / Wallingford</p>
+            <p class="notes">Stop at the Fremont Sunday Market, then continue to Gas Works Park for views across Lake Union.</p>
+            <div class="meta"><span class="chip">Free</span></div>
+            <div class="actions">
+              <a class="action" href="https://www.google.com/maps/search/?api=1&query=Fremont%20Troll%20Seattle" target="_blank" rel="noopener">Fremont Troll</a>
+              <a class="action" href="https://www.google.com/maps/search/?api=1&query=Gas%20Works%20Park%20Seattle" target="_blank" rel="noopener">Gas Works</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="stop">
+          <div class="time">Dinner</div>
+          <div class="content">
+            <h3 class="stop-title">Wayward Vegan Cafe</h3>
+            <p class="area">U District</p>
+            <p class="notes">Casual vegan diner. Convenient stop before heading back to Redmond.</p>
+            <div class="meta"><span class="chip veg">Fully vegan</span><span class="chip">$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Wayward%20Vegan%20Cafe%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+
+        <article class="stop optional">
+          <div class="time">Late</div>
+          <div class="content">
+            <h3 class="stop-title">Dick's Drive-In</h3>
+            <p class="area">Wallingford</p>
+            <p class="notes">Optional late-night stop. No vegetarian burger option.</p>
+            <div class="meta"><span class="chip optional">Optional</span><span class="chip">No veg burger</span><span class="chip">$</span></div>
+            <div class="actions"><a class="action" href="https://www.google.com/maps/search/?api=1&query=Dick%27s%20Drive-In%20Wallingford%20Seattle" target="_blank" rel="noopener">Maps</a></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer class="foot">
+      Built for the trip. Tap any Maps button for directions. Book-ahead stops link directly to ticket pages.
+    </footer>
+  </main>
+
+  <button class="jump" type="button" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <script>
+    const sections = [...document.querySelectorAll('.day')];
+    const navLinks = [...document.querySelectorAll('.day-nav a')];
+    const local = new Date();
+    const today = [
+      local.getFullYear(),
+      String(local.getMonth()+1).padStart(2,'0'),
+      String(local.getDate()).padStart(2,'0')
+    ].join('-');
+
+    sections.forEach(section => {
+      if (section.dataset.date === today) section.classList.add('is-today');
+    });
+
+    function closestDayId(){
+      const dates = sections.map(s => ({id:s.id,date:s.dataset.date}));
+      const exact = dates.find(d => d.date === today);
+      if (exact) return exact.id;
+      const future = dates.find(d => d.date > today);
+      return future ? future.id : dates[dates.length-1].id;
+    }
+
+    function setActive(id){
+      navLinks.forEach(link => link.classList.toggle('active', link.dataset.day === id));
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible) setActive(visible.target.id);
+    }, {rootMargin:'-20% 0px -60% 0px', threshold:[0,.15,.35]});
+
+    sections.forEach(section => observer.observe(section));
+    setActive(closestDayId());
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => setActive(link.dataset.day));
+    });
+  </script>
+</body>
+</html>
